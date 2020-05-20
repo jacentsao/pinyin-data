@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import collections
+import os
 
 
 def code_to_hanzi(code):
@@ -66,38 +67,39 @@ def extend_pinyins(old_map, new_map, only_no_exists=False):
 
 if __name__ == '__main__':
     raw_pinyin_map = {}
-    with open('kHanyuPinyin.txt') as fp:
-        khanyupinyin = parse_pinyins(fp)
-        raw_pinyin_map.update(khanyupinyin)
-    with open('kXHC1983.txt') as fp:
-        kxhc1983 = parse_pinyins(fp)
-        extend_pinyins(raw_pinyin_map, kxhc1983)
-    with open('nonCJKUI.txt') as fp:
+    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+    # with open(os.path.join(THIS_FOLDER,'kHanyuPinyin.txt'),'r', encoding='UTF-8') as fp:
+    #     khanyupinyin = parse_pinyins(fp)
+    #     raw_pinyin_map.update(khanyupinyin)
+    # with open('kXHC1983.txt') as fp:
+    #     kxhc1983 = parse_pinyins(fp)
+    #     extend_pinyins(raw_pinyin_map, kxhc1983)
+    with open(os.path.join(THIS_FOLDER,'nonCJKUI.txt'),'r', encoding='UTF-8') as fp:
         noncjkui = parse_pinyins(fp)
         extend_pinyins(raw_pinyin_map, noncjkui)
-    with open('kMandarin_8105.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'kMandarin_8105.txt'),'r', encoding='UTF-8') as fp:
         adjust_pinyin_map = parse_pinyins(fp)
         extend_pinyins(raw_pinyin_map, adjust_pinyin_map)
-    with open('kMandarin_overwrite.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'kMandarin_overwrite.txt'),'r', encoding='UTF-8') as fp:
         _map = parse_pinyins(fp)
         extend_pinyins(adjust_pinyin_map, _map)
         extend_pinyins(raw_pinyin_map, adjust_pinyin_map)
-    with open('kMandarin.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'kMandarin.txt'),'r', encoding='UTF-8') as fp:
         _map = parse_pinyins(fp)
         extend_pinyins(adjust_pinyin_map, _map)
         extend_pinyins(raw_pinyin_map, adjust_pinyin_map)
-    with open('kHanyuPinlu.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'kHanyuPinlu.txt'),'r', encoding='UTF-8') as fp:
         khanyupinyinlu = parse_pinyins(fp)
-        extend_pinyins(adjust_pinyin_map, _map)
+        extend_pinyins(adjust_pinyin_map, khanyupinyinlu)
         extend_pinyins(raw_pinyin_map, adjust_pinyin_map)
-    with open('GBK_PUA.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'GBK_PUA.txt'),'r', encoding='UTF-8') as fp:
         pua_pinyin_map = parse_pinyins(fp)
         extend_pinyins(raw_pinyin_map, pua_pinyin_map)
-    with open('kanji.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'kanji.txt'),'r', encoding='UTF-8') as fp:
         _map = parse_pinyins(fp)
         extend_pinyins(raw_pinyin_map, _map, only_no_exists=True)
 
-    with open('overwrite.txt') as fp:
+    with open(os.path.join(THIS_FOLDER,'overwrite.txt'),'r', encoding='UTF-8') as fp:
         overwrite_pinyin_map = parse_pinyins(fp)
         extend_pinyins(raw_pinyin_map, overwrite_pinyin_map)
 
@@ -107,13 +109,13 @@ if __name__ == '__main__':
 
     assert len(new_pinyin_map) == len(raw_pinyin_map)
     code_set = set(new_pinyin_map.keys())
-    assert set(khanyupinyin.keys()) - code_set == set()
+    # assert set(khanyupinyin.keys()) - code_set == set()
     assert set(khanyupinyinlu.keys()) - code_set == set()
-    assert set(kxhc1983.keys()) - code_set == set()
+    # assert set(kxhc1983.keys()) - code_set == set()
     assert set(adjust_pinyin_map.keys()) - code_set == set()
     assert set(overwrite_pinyin_map.keys()) - code_set == set()
     assert set(pua_pinyin_map.keys()) - code_set == set()
-    with open('pinyin.txt', 'w') as fp:
+    with open(os.path.join(THIS_FOLDER,'pinyin.txt'), 'w', encoding='UTF-8') as fp:
         fp.write('# version: 0.8.1\n')
         fp.write('# source: https://github.com/mozillazg/pinyin-data\n')
         save_data(new_pinyin_map, fp)
